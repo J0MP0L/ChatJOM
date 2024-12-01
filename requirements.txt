@@ -7,3 +7,4 @@ langchain-groq
 pinecone-client
 python-dotenv
 PyPDF2
+langchain_huggingface
