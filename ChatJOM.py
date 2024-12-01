@@ -6,21 +6,23 @@ from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate,MessagesPlaceholder
 from langchain_groq import ChatGroq
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader,WebBaseLoader
 from langchain_core.messages import trim_messages
 import os 
+import uuid
 from dotenv import load_dotenv
 load_dotenv()
 
 os.environ["LANGCHAIN_API_KEY"]=os.getenv("LANGCHAIN_API_KEY")
 os.environ["PINECONE_API_KEY"]=os.getenv("PINECONE_API_KEY")
+os.environ["HF_TOKEN"]=os.getenv("HF_TOKEN")
 groq_api=os.getenv("GROQ_API_KEY")
 os.environ["LANGCHAIN_TRACING_V2"]="true"
 os.environ["LANGCHAIN_PROJECT"]=os.getenv("LANGCHAIN_PROJECT")
 
-embedd=OllamaEmbeddings(model="gemma2:2b")
+embedd=HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 llm=ChatGroq(groq_api_key=groq_api,model_name="gemma2-9b-it")
 trimmer=trim_messages(max_tokens=1000,strategy="last",token_counter=llm,include_system=True
                       ,start_on="human")
@@ -71,7 +73,7 @@ pdf_file=st.sidebar.file_uploader("Choose PDF file:",type="pdf",accept_multiple_
 if pdf_file:
     documents=[]
     for file in pdf_file:
-        temp=f"./temp.pdf"
+        temp = f"./temp_{uuid.uuid4()}.pdf"
         with open(temp,"wb") as f:
             f.write(file.getvalue())
             f_name=file.name
