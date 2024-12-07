@@ -149,10 +149,11 @@ if user_input:
     st.session_state.messages.append({"role": "น้องสาว", "content": user_input})
     st.markdown(f'<div class="user-message">{user_input}</div>', unsafe_allow_html=True)
     streamlit_callback = StreamlitCallbackHandler(st.container())
-    response = ChatJOM.invoke(
-        {"input": user_input},
-        config={"configurable": {"session_id": "your_session_id"}},
-        callbacks=streamlit_callback
-    )
-    st.session_state.messages.append({"role": "จอม", "content": response['answer']})
-    st.markdown(f'<div class="bot-message">{response["answer"]}</div>', unsafe_allow_html=True)
+    with st.spinner("จอมกำลังคิดอยู่"):
+        response = ChatJOM.invoke(
+            {"input": user_input},
+            config={"configurable": {"session_id": "your_session_id"}},
+            callbacks=streamlit_callback
+        )
+        st.session_state.messages.append({"role": "จอม", "content": response['answer']})
+        st.markdown(f'<div class="bot-message">{response["answer"]}</div>', unsafe_allow_html=True)
